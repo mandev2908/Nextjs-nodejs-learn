@@ -15,7 +15,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { toCustomISOString,convertToISOString } from 'src/utils/format-date';
+import { toCustomISOString, convertToISOString } from 'src/utils/format-date';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -65,7 +65,7 @@ export function RegisterView() {
         email: formData.email,
         password: formData.password,
         confirm_password: formData.confirm_password, // Gửi confirm_password đến server
-        date_of_birth: convertToISOString(formData.date_of_birth) , // Gửi date_of_birth đến server
+        date_of_birth: convertToISOString(formData.date_of_birth), // Gửi date_of_birth đến server
       });
 
       if (response.status === 201) {
@@ -131,7 +131,7 @@ export function RegisterView() {
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
           {snackbar.message}
@@ -139,7 +139,13 @@ export function RegisterView() {
       </Snackbar>
 
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h5">Register</Typography>
+        <Typography
+          component="h1"
+          variant="h4"
+          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
+        >
+          Register
+        </Typography>
         <Typography variant="body2" color="text.secondary">
           Already have an account?
           <Link href="/sign-in" variant="subtitle2" sx={{ ml: 0.5 }}>

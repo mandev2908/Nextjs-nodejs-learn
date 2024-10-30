@@ -20,7 +20,7 @@ export function SignInView() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function SignInView() {
         router.push('/'); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
       }
     } catch (error) {
-      console.error("Đăng nhập thất bại:", error);
+      console.error('Đăng nhập thất bại:', error);
     }
   }, [formData, router]);
 
@@ -52,7 +52,7 @@ export function SignInView() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -108,10 +108,16 @@ export function SignInView() {
   return (
     <>
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h5">Sign in</Typography>
+        <Typography
+          component="h1"
+          variant="h4"
+          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
+        >
+          Sign in
+        </Typography>
         <Typography variant="body2" color="text.secondary">
           Don’t have an account?
-          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5, cursor: "pointer" }}>
+          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }}>
             Create an account
           </Link>
         </Typography>

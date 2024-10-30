@@ -8,7 +8,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 
 import { useRouter } from 'src/routes/hooks';
 
-
 // ----------------------------------------------------------------------
 
 export function ForgotPasswordView() {
@@ -32,7 +31,13 @@ export function ForgotPasswordView() {
   return (
     <>
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h5">Forgot Password</Typography>
+        <Typography
+          component="h1"
+          variant="h4"
+          sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
+        >
+          Forgot Password
+        </Typography>
         <Typography variant="body2" color="text.secondary">
           Please enter your email to receive a password reset link.
         </Typography>
