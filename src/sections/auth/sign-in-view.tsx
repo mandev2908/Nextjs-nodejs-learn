@@ -35,7 +35,7 @@ export function SignInView() {
         sx={{ mb: 3 }}
       />
 
-      <Link variant="body2" color="inherit" sx={{ mb: 1.5 }}>
+      <Link href="/forgot-password" variant="body2" color="inherit" sx={{ mb: 1.5 }}>
         Forgot password?
       </Link>
 
@@ -73,12 +73,12 @@ export function SignInView() {
 
   return (
     <>
-      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
+      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5}}>
         <Typography variant="h5">Sign in</Typography>
         <Typography variant="body2" color="text.secondary">
           Don’t have an account?
-          <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-            Get started
+          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5,cursor:"pointer"}}>
+          Create an account
           </Link>
         </Typography>
       </Box>
