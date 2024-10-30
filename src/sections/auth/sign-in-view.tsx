@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import axios from 'axios';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,16 +14,47 @@ import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 
-// ----------------------------------------------------------------------
-
 export function SignInView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  useEffect(() => {
+    const registeredEmail = localStorage.getItem('registeredEmail');
+    const registeredPassword = localStorage.getItem('registeredPassword');
+
+    if (registeredEmail && registeredPassword) {
+      setFormData({ email: registeredEmail, password: registeredPassword });
+
+      localStorage.removeItem('registeredEmail');
+      localStorage.removeItem('registeredPassword');
+    }
+  }, []);
+
+  const handleSignIn = useCallback(async () => {
+    try {
+      const response = await axios.post('http://localhost:3000/users/login/', formData);
+
+      if (response.status === 200) {
+        router.push('/'); // Chuyển hướng đến trang chính sau khi đăng nhập thành công
+      }
+    } catch (error) {
+      console.error("Đăng nhập thất bại:", error);
+    }
+  }, [formData, router]);
+
+  // Hàm xử lý onChange cho các trường form
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">
@@ -30,7 +62,8 @@ export function SignInView() {
         fullWidth
         name="email"
         label="Email address"
-        defaultValue="hello@gmail.com"
+        value={formData.email}
+        onChange={handleChange}
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
       />
@@ -43,7 +76,8 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Password"
-        defaultValue="@demo1234"
+        value={formData.password}
+        onChange={handleChange}
         InputLabelProps={{ shrink: true }}
         type={showPassword ? 'text' : 'password'}
         InputProps={{
@@ -73,12 +107,12 @@ export function SignInView() {
 
   return (
     <>
-      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5}}>
+      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
         <Typography variant="h5">Sign in</Typography>
         <Typography variant="body2" color="text.secondary">
           Don’t have an account?
-          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5,cursor:"pointer"}}>
-          Create an account
+          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5, cursor: "pointer" }}>
+            Create an account
           </Link>
         </Typography>
       </Box>

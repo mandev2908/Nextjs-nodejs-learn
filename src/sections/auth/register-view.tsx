@@ -1,7 +1,12 @@
+import type { AlertColor } from '@mui/material/Alert';
+
+import axios from 'axios';
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
@@ -9,6 +14,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
+
+import { toCustomISOString,convertToISOString } from 'src/utils/format-date';
 
 import { Iconify } from 'src/components/iconify';
 
@@ -19,33 +26,118 @@ export function RegisterView() {
 
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
-    password: ''
+    password: '',
+    confirm_password: '', // Đổi tên trường thành confirm_password
+    date_of_birth: toCustomISOString(new Date()), // Trường ngày sinh
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+
+  // Trạng thái cho Snackbar
+  const [snackbar, setSnackbar] = useState<{
+    open: boolean;
+    message: string;
+    severity: AlertColor;
+    vertical: string;
+    horizontal: string;
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+    vertical: 'top',
+    horizontal: 'center',
+  });
 
   const handleRegister = async () => {
     setIsSubmitting(true);
 
-    // Thực hiện yêu cầu đăng ký tới server tại đây
-    // Giả lập đăng ký thành công và chuyển trang
-    setTimeout(() => {
+    if (formData.password !== formData.confirm_password) {
+      setConfirmPasswordError(true);
       setIsSubmitting(false);
-      alert('Registration successful!');
-      router.push('/sign-in');
-    }, 2000);
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/users/register/', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirm_password: formData.confirm_password, // Gửi confirm_password đến server
+        date_of_birth: convertToISOString(formData.date_of_birth) , // Gửi date_of_birth đến server
+      });
+
+      if (response.status === 201) {
+        // Lưu email và password vào localStorage
+        localStorage.setItem('registeredEmail', formData.email);
+        localStorage.setItem('registeredPassword', formData.password);
+
+        setSnackbar({
+          open: true,
+          message: 'Registration successful!',
+          severity: 'success',
+          vertical: 'top',
+          horizontal: 'center',
+        });
+
+        setTimeout(() => {
+          router.push('/sign-in');
+        }, 2000);
+      } else {
+        setSnackbar({
+          open: true,
+          message: 'Registration failed. Please try again.',
+          severity: 'error',
+          vertical: 'top',
+          horizontal: 'center',
+        });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      setSnackbar({
+        open: true,
+        message: 'Registration failed. Please try again.',
+        severity: 'error',
+        vertical: 'top',
+        horizontal: 'center',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (e:any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value,
     });
+
+    if (name === 'confirm_password') {
+      setConfirmPasswordError(value !== formData.password);
+    }
+  };
+
+  // Đóng Snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
     <>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
         <Typography variant="h5">Register</Typography>
         <Typography variant="body2" color="text.secondary">
@@ -59,9 +151,9 @@ export function RegisterView() {
       <Box display="flex" flexDirection="column" alignItems="flex-end">
         <TextField
           fullWidth
-          name="fullName"
+          name="name"
           label="Full Name"
-          value={formData.fullName}
+          value={formData.name}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
           sx={{ mb: 3 }}
@@ -94,6 +186,40 @@ export function RegisterView() {
               </InputAdornment>
             ),
           }}
+          sx={{ mb: 3 }}
+        />
+
+        <TextField
+          fullWidth
+          name="confirm_password" // Đổi tên trường thành confirm_password
+          label="Confirm Password"
+          color={formData.password !== formData.confirm_password ? 'error' : 'success'}
+          type={showPassword ? 'text' : 'password'}
+          value={formData.confirm_password}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
+          error={confirmPasswordError}
+          helperText={confirmPasswordError ? 'Passwords do not match' : ''}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                  <Iconify icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mb: 3 }}
+        />
+
+        <TextField
+          fullWidth
+          name="date_of_birth" // Trường ngày sinh
+          label="Date of Birth"
+          type="date"
+          value={formData.date_of_birth}
+          onChange={handleChange}
+          InputLabelProps={{ shrink: true }}
           sx={{ mb: 3 }}
         />
 
