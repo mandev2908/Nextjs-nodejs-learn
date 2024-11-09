@@ -92,6 +92,15 @@ export function SignInView() {
         sx={{ mb: 3 }}
       />
 
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 5 }}>
+        <Typography variant="body2" color="text.secondary">
+          Don’t have an account?
+          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }}>
+            Create an account
+          </Link>
+        </Typography>
+      </Box>
+
       <LoadingButton
         fullWidth
         size="large"
@@ -114,12 +123,6 @@ export function SignInView() {
           sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)', textAlign: 'center' }}
         >
           Sign in
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Don’t have an account?
-          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5, cursor: 'pointer' }}>
-            Create an account
-          </Link>
         </Typography>
       </Box>
 
